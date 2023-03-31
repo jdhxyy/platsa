@@ -1,15 +1,15 @@
 // Copyright 2020-2021 The jdh99 Authors. All rights reserved.
-// ¼üÖµÊı¾İ¿â
+// é”®å€¼æ•°æ®åº“
 // Authors: jdh99 <jdh821@163.com>
-// ¼ÇÂ¼(record)¸ñÊ½:
+// è®°å½•(record)æ ¼å¼:
 //   oid|key|value
-//   oid:object id.Ã¿Ìõ¼ÇÂ¼µÄÎ¨Ò»id
-//   key:¼üÖµ,±ØĞëÎ¨Ò»,±ØĞëÊÇ×Ö·û´®
-//   value:¿ÉÒÔÊÇÈÎÒâ¸ñÊ½×Ö½ÚÁ÷
-// ¼ÇÂ¼ÓĞ¹ıÆÚÊôĞÔµÄÊôĞÔ,»á×Ô¶¯Çå³ı¹ıÆÚ½Úµã.¹ıÆÚÊ±¼äÎª0±íÊ¾²»»á¹ıÆÚ
-// ³Ö¾Ã»¯´æ´¢»áÍ¬Ê±´æÖ÷±¸,Ö»»á´æ´¢²»»á¹ıÆÚµÄ½Úµã
-// Èç¹ûÒªÊ¹ÓÃ³Ö¾Ã»¯´æ´¢µÄ¹¦ÄÜ,±ØĞë±£Ö¤²»ÄÜÊ¹ÓÃ³¬¹ıÒ»°ëµÄÄÚ´æ,
-// ÒòÎª³Ö¾Ã»¯´æ´¢ÏÖÓĞ»úÖÆ»áÏÈ½«²ÎÊıÈ«²¿½ô´ÕµÄ´æ´¢ÔÚÒ»¿éÁ¬ĞøµÄÄÚ´æÖĞ
+//   oid:object id.æ¯æ¡è®°å½•çš„å”¯ä¸€id
+//   key:é”®å€¼,å¿…é¡»å”¯ä¸€,å¿…é¡»æ˜¯å­—ç¬¦ä¸²
+//   value:å¯ä»¥æ˜¯ä»»æ„æ ¼å¼å­—èŠ‚æµ
+// è®°å½•æœ‰è¿‡æœŸå±æ€§çš„å±æ€§,ä¼šè‡ªåŠ¨æ¸…é™¤è¿‡æœŸèŠ‚ç‚¹.è¿‡æœŸæ—¶é—´ä¸º0è¡¨ç¤ºä¸ä¼šè¿‡æœŸ
+// æŒä¹…åŒ–å­˜å‚¨ä¼šåŒæ—¶å­˜ä¸»å¤‡,åªä¼šå­˜å‚¨ä¸ä¼šè¿‡æœŸçš„èŠ‚ç‚¹
+// å¦‚æœè¦ä½¿ç”¨æŒä¹…åŒ–å­˜å‚¨çš„åŠŸèƒ½,å¿…é¡»ä¿è¯ä¸èƒ½ä½¿ç”¨è¶…è¿‡ä¸€åŠçš„å†…å­˜,
+// å› ä¸ºæŒä¹…åŒ–å­˜å‚¨ç°æœ‰æœºåˆ¶ä¼šå…ˆå°†å‚æ•°å…¨éƒ¨ç´§å‡‘çš„å­˜å‚¨åœ¨ä¸€å—è¿ç»­çš„å†…å­˜ä¸­
 
 #ifndef PLATSA_H
 #define PLATSA_H
@@ -17,88 +17,88 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// ×î³¤key×Ö½ÚÊı
+// æœ€é•¿keyå­—èŠ‚æ•°
 #define PLATSA_KEY_LEN_MAX 512
 
-// Çå³ı¹ıÆÚ½ÚµãµÄ¼ä¸ô.µ¥Î»:s
+// æ¸…é™¤è¿‡æœŸèŠ‚ç‚¹çš„é—´éš”.å•ä½:s
 #define PLATSA_INTERVAL_CLEAR_EXPIRATION_NODE 10
 
-// ÎŞĞ§µØÖ·
+// æ— æ•ˆåœ°å€
 #define PLATSA_INVALID_ADDR 0xffffffff
 
-// ÓÀ²»¹ıÆÚ.µ«²»¿ÉÒÔ³Ö¾Ã»¯´æ´¢
+// æ°¸ä¸è¿‡æœŸ.ä½†ä¸å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
 #define PLATSA_NEVER_EXPIRE -1
 
-// PlatsaLoad Ä£¿éÔØÈë
-// midÊÇtzmallocµÄÄÚ´æid
+// PlatsaLoad æ¨¡å—è½½å…¥
+// midæ˜¯tzmallocçš„å†…å­˜id
 bool PlatsaLoad(int mid);
 
-// PlatsaGetOid »ñÈ¡OID
-// ·µ»Ø0±íÊ¾Ê§°Ü
+// PlatsaGetOid è·å–OID
+// è¿”å›0è¡¨ç¤ºå¤±è´¥
 intptr_t PlatsaGetOid(char* key);
 
-// PlatsaSet ÉèÖÃ¼ü¶ÔÓ¦µÄÖµ.Èç¹û¼ü²»´æÔÚ,»áĞÂ½¨¼ü
-// ·µ»ØµÄÊÇoid,Èç¹ûÎª0±íÊ¾ÉèÖÃÊ§°Ü
+// PlatsaSet è®¾ç½®é”®å¯¹åº”çš„å€¼.å¦‚æœé”®ä¸å­˜åœ¨,ä¼šæ–°å»ºé”®
+// è¿”å›çš„æ˜¯oid,å¦‚æœä¸º0è¡¨ç¤ºè®¾ç½®å¤±è´¥
 intptr_t PlatsaSet(char* key, uint8_t* bytes, int size);
 
-// PlatsaSetByOid ÉèÖÃoid¶ÔÓ¦µÄÖµ
+// PlatsaSetByOid è®¾ç½®oidå¯¹åº”çš„å€¼
 bool PlatsaSetByOid(intptr_t oid, uint8_t* bytes, int size);
 
-// PlatsaGet »ñÈ¡Öµ
-// ·µ»ØÈç¹ûÎªNULL,±íÊ¾»ñÈ¡Ê§°Ü.ÖµµÄ³¤¶È±£´æÔÚvalueLenÖĞ
-// Èç¹û²»ĞèÒª±£´æÖµµÄ³¤¶È,valueLen¿É´«ÈëNULL
-// ×¢Òâ:ĞŞ¸Ä·µ»ØµÄÖµÊÇ²»°²È«µÄ,¿ÉÄÜ»áÒı·¢ÄÚ´æĞ¹Â©
+// PlatsaGet è·å–å€¼
+// è¿”å›å¦‚æœä¸ºNULL,è¡¨ç¤ºè·å–å¤±è´¥.å€¼çš„é•¿åº¦ä¿å­˜åœ¨valueLenä¸­
+// å¦‚æœä¸éœ€è¦ä¿å­˜å€¼çš„é•¿åº¦,valueLenå¯ä¼ å…¥NULL
+// æ³¨æ„:ä¿®æ”¹è¿”å›çš„å€¼æ˜¯ä¸å®‰å…¨çš„,å¯èƒ½ä¼šå¼•å‘å†…å­˜æ³„æ¼
 uint8_t* PlatsaGet(char* key, int* valueLen);
 
-// PlatsaGetByOid ¸ù¾İoid»ñÈ¡Öµ
-// ·µ»ØÈç¹ûÎªNULL,±íÊ¾»ñÈ¡Ê§°Ü.ÖµµÄ³¤¶È±£´æÔÚvalueLenÖĞ
-// Èç¹û²»ĞèÒª±£´æÖµµÄ³¤¶È,valueLen¿É´«ÈëNULL
-// ×¢Òâ:ĞŞ¸Ä·µ»ØµÄÖµÊÇ²»°²È«µÄ,¿ÉÄÜ»áÒı·¢ÄÚ´æĞ¹Â©
+// PlatsaGetByOid æ ¹æ®oidè·å–å€¼
+// è¿”å›å¦‚æœä¸ºNULL,è¡¨ç¤ºè·å–å¤±è´¥.å€¼çš„é•¿åº¦ä¿å­˜åœ¨valueLenä¸­
+// å¦‚æœä¸éœ€è¦ä¿å­˜å€¼çš„é•¿åº¦,valueLenå¯ä¼ å…¥NULL
+// æ³¨æ„:ä¿®æ”¹è¿”å›çš„å€¼æ˜¯ä¸å®‰å…¨çš„,å¯èƒ½ä¼šå¼•å‘å†…å­˜æ³„æ¼
 uint8_t* PlatsaGetByOid(intptr_t oid, int* valueLen);
 
-// PlatsaDelete É¾³ıkey¶ÔÓ¦µÄ¼ÇÂ¼
+// PlatsaDelete åˆ é™¤keyå¯¹åº”çš„è®°å½•
 void PlatsaDelete(char* key);
 
-// PlatsaDeleteByOid É¾³ıkey¶ÔÓ¦µÄ¼ÇÂ¼
+// PlatsaDeleteByOid åˆ é™¤keyå¯¹åº”çš„è®°å½•
 void PlatsaDeleteByOid(intptr_t oid);
 
-// PlatsaIsExistKey ÅĞ¶ÏkeyÊÇ·ñ´æÔÚ
+// PlatsaIsExistKey åˆ¤æ–­keyæ˜¯å¦å­˜åœ¨
 bool PlatsaIsExistKey(char* key);
 
-// PlatsaRenameKey ÖØÃüÃûkey
+// PlatsaRenameKey é‡å‘½åkey
 bool PlatsaRenameKey(char* oldKey, char* newKey);
 
-// PlatsaRenameKey ÖØÃüÃûkey
+// PlatsaRenameKey é‡å‘½åkey
 bool PlatsaRenameKeyByOid(intptr_t oid, char* newKey);
 
-// PlatsaSetExipirationTime ÉèÖÃ¹ıÆÚÊ±¼ä
-// expirationTime:µ¥Î»:ms.µ±Ç°Ê±¿ÌÖ®ºó¾­¹ıexpirationTimeºÁÃë¹ıÆÚ
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎª0,±íÊ¾²»»á¹ıÆÚ,ÇÒ¿ÉÒÔ³Ö¾Ã»¯´æ´¢
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎªPLATSA_NEVER_EXPIRE,±íÊ¾²»»á¹ıÆÚ,µ«²»¿ÉÒÔ³Ö¾Ã»¯´æ´¢
+// PlatsaSetExipirationTime è®¾ç½®è¿‡æœŸæ—¶é—´
+// expirationTime:å•ä½:ms.å½“å‰æ—¶åˆ»ä¹‹åç»è¿‡expirationTimeæ¯«ç§’è¿‡æœŸ
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸º0,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä¸”å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸ºPLATSA_NEVER_EXPIRE,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä½†ä¸å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
 void PlatsaSetExipirationTime(char* key, int expirationTime);
 
-// PlatsaSetExipirationTimeByOid ÉèÖÃ¹ıÆÚÊ±¼ä
-// expirationTime:µ¥Î»:ms.µ±Ç°Ê±¿ÌÖ®ºó¾­¹ıexpirationTimeºÁÃë¹ıÆÚ
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎª0,±íÊ¾²»»á¹ıÆÚ,ÇÒ¿ÉÒÔ³Ö¾Ã»¯´æ´¢
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎªPLATSA_NEVER_EXPIRE,±íÊ¾²»»á¹ıÆÚ,µ«²»¿ÉÒÔ³Ö¾Ã»¯´æ´¢
+// PlatsaSetExipirationTimeByOid è®¾ç½®è¿‡æœŸæ—¶é—´
+// expirationTime:å•ä½:ms.å½“å‰æ—¶åˆ»ä¹‹åç»è¿‡expirationTimeæ¯«ç§’è¿‡æœŸ
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸º0,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä¸”å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸ºPLATSA_NEVER_EXPIRE,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä½†ä¸å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
 void PlatsaSetExipirationTimeByOid(intptr_t oid, int expirationTime);
 
-// PlatsaGetUsedSize »ñÈ¡ÒÑ¾­Ê¹ÓÃµÄÄÚ´æ×Ö½ÚÊı
-// 0±íÊ¾»ñÈ¡Ê§°Ü
+// PlatsaGetUsedSize è·å–å·²ç»ä½¿ç”¨çš„å†…å­˜å­—èŠ‚æ•°
+// 0è¡¨ç¤ºè·å–å¤±è´¥
 int PlatsaGetUsedSize(void);
 
-// PlatsaSave ³Ö¾Ã»¯Êı¾İµ½´ÅÅÌ
-// primaryAddrÊÇÖ÷Òª´æ´¢Çø,µØÖ·±ØĞë²»ÎªPLATSA_INVALID_ADDR
-// standbyAddrÊÇ±¸·İ´æ´¢Çø,ÎªPLATSA_INVALID_ADDR±íÊ¾ÎŞ±¸·İ´æ´¢Çø
-// sizeÊÇ´æ´¢Çø×Ö½ÚÊı
-// ³É¹¦·µ»Øtrue,Ê§°Ü·µ»Øfalse
+// PlatsaSave æŒä¹…åŒ–æ•°æ®åˆ°ç£ç›˜
+// primaryAddræ˜¯ä¸»è¦å­˜å‚¨åŒº,åœ°å€å¿…é¡»ä¸ä¸ºPLATSA_INVALID_ADDR
+// standbyAddræ˜¯å¤‡ä»½å­˜å‚¨åŒº,ä¸ºPLATSA_INVALID_ADDRè¡¨ç¤ºæ— å¤‡ä»½å­˜å‚¨åŒº
+// sizeæ˜¯å­˜å‚¨åŒºå­—èŠ‚æ•°
+// æˆåŠŸè¿”å›true,å¤±è´¥è¿”å›false
 bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size);
 
-// PlatsaRecovery ´Ó´ÅÅÌ»Ö¸´Êı¾İ
-// primaryAddrÊÇÖ÷Òª´æ´¢Çø,µØÖ·±ØĞë²»ÎªPLATSA_INVALID_ADDR
-// standbyAddrÊÇ±¸·İ´æ´¢Çø,ÎªPLATSA_INVALID_ADDR±íÊ¾ÎŞ±¸·İ´æ´¢Çø
-// sizeÊÇ´æ´¢Çø×Ö½ÚÊı
-// ³É¹¦·µ»Øtrue,Ê§°Ü·µ»Øfalse
+// PlatsaRecovery ä»ç£ç›˜æ¢å¤æ•°æ®
+// primaryAddræ˜¯ä¸»è¦å­˜å‚¨åŒº,åœ°å€å¿…é¡»ä¸ä¸ºPLATSA_INVALID_ADDR
+// standbyAddræ˜¯å¤‡ä»½å­˜å‚¨åŒº,ä¸ºPLATSA_INVALID_ADDRè¡¨ç¤ºæ— å¤‡ä»½å­˜å‚¨åŒº
+// sizeæ˜¯å­˜å‚¨åŒºå­—èŠ‚æ•°
+// æˆåŠŸè¿”å›true,å¤±è´¥è¿”å›false
 bool PlatsaRecovery(uint32_t primaryAddr, uint32_t standbyAddr, int size);
 
 #endif

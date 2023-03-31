@@ -1,5 +1,5 @@
 // Copyright 2020-2021 The jdh99 Authors. All rights reserved.
-// ¼üÖµÊı¾İ¿â
+// é”®å€¼æ•°æ®åº“
 // Authors: jdh99 <jdh821@163.com>
 
 #include "platsa.h"
@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     uint16_t magic;
     uint32_t size;
-    // crcĞ£ÑéµÄ×Ö¶ÎÎªbytes
+    // crcæ ¡éªŒçš„å­—æ®µä¸ºbytes
     uint16_t crc16;
     uint8_t bytes[];
 } tSave;
@@ -43,8 +43,8 @@ static bool writeFlash(uint32_t addr, int size, tSave* save);
 static bool readFlash(uint32_t addr, int size);
 static bool recovery(uint8_t* bytes, int size);
 
-// PlatsaLoad Ä£¿éÔØÈë
-// midÊÇtzmallocµÄÄÚ´æid
+// PlatsaLoad æ¨¡å—è½½å…¥
+// midæ˜¯tzmallocçš„å†…å­˜id
 bool PlatsaLoad(int mid) {
     gMid = mid;
     gList = TZListCreateList(gMid);
@@ -83,8 +83,8 @@ static void clearExpirationNode(void) {
     }
 }
 
-// PlatsaGetOid »ñÈ¡OID
-// ·µ»Ø0±íÊ¾Ê§°Ü
+// PlatsaGetOid è·å–OID
+// è¿”å›0è¡¨ç¤ºå¤±è´¥
 intptr_t PlatsaGetOid(char* key) {
     int keyLen = (int)strlen(key) + 1;
     if (keyLen > PLATSA_KEY_LEN_MAX) {
@@ -110,7 +110,7 @@ intptr_t PlatsaGetOid(char* key) {
             }
 
             if (node != TZListGetHeader(gList)) {
-                // ½«½Úµã·ÅÔÚ¶ÓÊ×,¼ÓËÙÏÂ´Î²éÑ¯
+                // å°†èŠ‚ç‚¹æ”¾åœ¨é˜Ÿé¦–,åŠ é€Ÿä¸‹æ¬¡æŸ¥è¯¢
                 TZListBreakLink(gList, node);
                 TZListPrepend(gList, node);
             }
@@ -126,8 +126,8 @@ intptr_t PlatsaGetOid(char* key) {
     return 0;
 }
 
-// PlatsaSet ÉèÖÃ¼ü¶ÔÓ¦µÄÖµ.Èç¹û¼ü²»´æÔÚ,»áĞÂ½¨¼ü
-// ·µ»ØµÄÊÇoid,Èç¹ûÎª0±íÊ¾ÉèÖÃÊ§°Ü
+// PlatsaSet è®¾ç½®é”®å¯¹åº”çš„å€¼.å¦‚æœé”®ä¸å­˜åœ¨,ä¼šæ–°å»ºé”®
+// è¿”å›çš„æ˜¯oid,å¦‚æœä¸º0è¡¨ç¤ºè®¾ç½®å¤±è´¥
 intptr_t PlatsaSet(char* key, uint8_t* bytes, int size) {
     TZBufferDynamic* newValueBuffer = (TZBufferDynamic*)TZMalloc(gMid, (int)sizeof(TZBufferDynamic) + size);
     if (newValueBuffer == NULL) {
@@ -181,7 +181,7 @@ static TZListNode* createNode(void) {
     return node;
 }
 
-// PlatsaSetByOid ÉèÖÃoid¶ÔÓ¦µÄÖµ
+// PlatsaSetByOid è®¾ç½®oidå¯¹åº”çš„å€¼
 bool PlatsaSetByOid(intptr_t oid, uint8_t* bytes, int size) {
     if (oid == 0) {
         return false;
@@ -201,18 +201,18 @@ bool PlatsaSetByOid(intptr_t oid, uint8_t* bytes, int size) {
     return true;
 }
 
-// PlatsaGet »ñÈ¡Öµ
-// ·µ»ØÈç¹ûÎªNULL,±íÊ¾»ñÈ¡Ê§°Ü.ÖµµÄ³¤¶È±£´æÔÚvalueLenÖĞ
-// Èç¹û²»ĞèÒª±£´æÖµµÄ³¤¶È,valueLen¿É´«ÈëNULL
-// ×¢Òâ:ĞŞ¸Ä·µ»ØµÄÖµÊÇ²»°²È«µÄ,¿ÉÄÜ»áÒı·¢ÄÚ´æĞ¹Â©
+// PlatsaGet è·å–å€¼
+// è¿”å›å¦‚æœä¸ºNULL,è¡¨ç¤ºè·å–å¤±è´¥.å€¼çš„é•¿åº¦ä¿å­˜åœ¨valueLenä¸­
+// å¦‚æœä¸éœ€è¦ä¿å­˜å€¼çš„é•¿åº¦,valueLenå¯ä¼ å…¥NULL
+// æ³¨æ„:ä¿®æ”¹è¿”å›çš„å€¼æ˜¯ä¸å®‰å…¨çš„,å¯èƒ½ä¼šå¼•å‘å†…å­˜æ³„æ¼
 uint8_t* PlatsaGet(char* key, int* valueLen) {
     return PlatsaGetByOid(PlatsaGetOid(key), valueLen);
 }
 
-// PlatsaGetByOid ¸ù¾İoid»ñÈ¡Öµ
-// ·µ»ØÈç¹ûÎªNULL,±íÊ¾»ñÈ¡Ê§°Ü.ÖµµÄ³¤¶È±£´æÔÚvalueLenÖĞ
-// Èç¹û²»ĞèÒª±£´æÖµµÄ³¤¶È,valueLen¿É´«ÈëNULL
-// ×¢Òâ:ĞŞ¸Ä·µ»ØµÄÖµÊÇ²»°²È«µÄ,¿ÉÄÜ»áÒı·¢ÄÚ´æĞ¹Â©
+// PlatsaGetByOid æ ¹æ®oidè·å–å€¼
+// è¿”å›å¦‚æœä¸ºNULL,è¡¨ç¤ºè·å–å¤±è´¥.å€¼çš„é•¿åº¦ä¿å­˜åœ¨valueLenä¸­
+// å¦‚æœä¸éœ€è¦ä¿å­˜å€¼çš„é•¿åº¦,valueLenå¯ä¼ å…¥NULL
+// æ³¨æ„:ä¿®æ”¹è¿”å›çš„å€¼æ˜¯ä¸å®‰å…¨çš„,å¯èƒ½ä¼šå¼•å‘å†…å­˜æ³„æ¼
 uint8_t* PlatsaGetByOid(intptr_t oid, int* valueLen) {
     if (oid == 0) {
         return NULL;
@@ -225,12 +225,12 @@ uint8_t* PlatsaGetByOid(intptr_t oid, int* valueLen) {
     return item->value->buf;
 }
 
-// PlatsaDelete É¾³ıkey¶ÔÓ¦µÄ¼ÇÂ¼
+// PlatsaDelete åˆ é™¤keyå¯¹åº”çš„è®°å½•
 void PlatsaDelete(char* key) {
     PlatsaDeleteByOid(PlatsaGetOid(key));
 }
 
-// PlatsaDeleteByOid É¾³ıkey¶ÔÓ¦µÄ¼ÇÂ¼
+// PlatsaDeleteByOid åˆ é™¤keyå¯¹åº”çš„è®°å½•
 void PlatsaDeleteByOid(intptr_t oid) {
     if (oid == 0) {
         return;
@@ -242,18 +242,18 @@ void PlatsaDeleteByOid(intptr_t oid) {
     TZListRemove(gList, node);
 }
 
-// PlatsaIsExistKey ÅĞ¶ÏkeyÊÇ·ñ´æÔÚ
+// PlatsaIsExistKey åˆ¤æ–­keyæ˜¯å¦å­˜åœ¨
 bool PlatsaIsExistKey(char* key) {
     intptr_t oid = PlatsaGetOid(key);
     return oid != 0;
 }
 
-// PlatsaRenameKey ÖØÃüÃûkey
+// PlatsaRenameKey é‡å‘½åkey
 bool PlatsaRenameKey(char* oldKey, char* newKey) {
     return PlatsaRenameKeyByOid(PlatsaGetOid(oldKey), newKey);
 }
 
-// PlatsaRenameKey ÖØÃüÃûkey
+// PlatsaRenameKey é‡å‘½åkey
 bool PlatsaRenameKeyByOid(intptr_t oid, char* newKey) {
     int newKeyLen = (int)strlen(newKey) + 1;
     if (newKeyLen > PLATSA_KEY_LEN_MAX) {
@@ -280,18 +280,18 @@ bool PlatsaRenameKeyByOid(intptr_t oid, char* newKey) {
     return true;
 }
 
-// PlatsaSetExipirationTime ÉèÖÃ¹ıÆÚÊ±¼ä
-// expirationTime:µ¥Î»:ms.µ±Ç°Ê±¿ÌÖ®ºó¾­¹ıexpirationTimeºÁÃë¹ıÆÚ
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎª0,±íÊ¾²»»á¹ıÆÚ,ÇÒ¿ÉÒÔ³Ö¾Ã»¯´æ´¢
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎªPLATSA_NEVER_EXPIRE,±íÊ¾²»»á¹ıÆÚ,µ«²»¿ÉÒÔ³Ö¾Ã»¯´æ´¢
+// PlatsaSetExipirationTime è®¾ç½®è¿‡æœŸæ—¶é—´
+// expirationTime:å•ä½:ms.å½“å‰æ—¶åˆ»ä¹‹åç»è¿‡expirationTimeæ¯«ç§’è¿‡æœŸ
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸º0,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä¸”å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸ºPLATSA_NEVER_EXPIRE,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä½†ä¸å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
 void PlatsaSetExipirationTime(char* key, int expirationTime) {
     PlatsaSetExipirationTimeByOid(PlatsaGetOid(key), expirationTime);
 }
 
-// PlatsaSetExipirationTimeByOid ÉèÖÃ¹ıÆÚÊ±¼ä
-// expirationTime:µ¥Î»:ms.µ±Ç°Ê±¿ÌÖ®ºó¾­¹ıexpirationTimeºÁÃë¹ıÆÚ
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎª0,±íÊ¾²»»á¹ıÆÚ,ÇÒ¿ÉÒÔ³Ö¾Ã»¯´æ´¢
-// Èç¹û¹ıÆÚÊ±¼äÉèÖÃÎªPLATSA_NEVER_EXPIRE,±íÊ¾²»»á¹ıÆÚ,µ«²»¿ÉÒÔ³Ö¾Ã»¯´æ´¢
+// PlatsaSetExipirationTimeByOid è®¾ç½®è¿‡æœŸæ—¶é—´
+// expirationTime:å•ä½:ms.å½“å‰æ—¶åˆ»ä¹‹åç»è¿‡expirationTimeæ¯«ç§’è¿‡æœŸ
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸º0,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä¸”å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
+// å¦‚æœè¿‡æœŸæ—¶é—´è®¾ç½®ä¸ºPLATSA_NEVER_EXPIRE,è¡¨ç¤ºä¸ä¼šè¿‡æœŸ,ä½†ä¸å¯ä»¥æŒä¹…åŒ–å­˜å‚¨
 void PlatsaSetExipirationTimeByOid(intptr_t oid, int expirationTime) {
     if (oid == 0) {
         return;
@@ -305,8 +305,8 @@ void PlatsaSetExipirationTimeByOid(intptr_t oid, int expirationTime) {
     }
 }
 
-// PlatsaGetUsedSize »ñÈ¡ÒÑ¾­Ê¹ÓÃµÄÄÚ´æ×Ö½ÚÊı
-// 0±íÊ¾»ñÈ¡Ê§°Ü
+// PlatsaGetUsedSize è·å–å·²ç»ä½¿ç”¨çš„å†…å­˜å­—èŠ‚æ•°
+// 0è¡¨ç¤ºè·å–å¤±è´¥
 int PlatsaGetUsedSize(void) {
     TZMallocUser* user = TZMallocGetUser(gMid);
     if (user == NULL) {
@@ -315,11 +315,11 @@ int PlatsaGetUsedSize(void) {
     return (int)user->Used;
 }
 
-// PlatsaSave ³Ö¾Ã»¯Êı¾İµ½´ÅÅÌ
-// primaryAddrÊÇÖ÷Òª´æ´¢Çø,µØÖ·±ØĞë²»ÎªPLATSA_INVALID_ADDR
-// standbyAddrÊÇ±¸·İ´æ´¢Çø,ÎªPLATSA_INVALID_ADDR±íÊ¾ÎŞ±¸·İ´æ´¢Çø
-// sizeÊÇ´æ´¢Çø×Ö½ÚÊı
-// ³É¹¦·µ»Øtrue,Ê§°Ü·µ»Øfalse
+// PlatsaSave æŒä¹…åŒ–æ•°æ®åˆ°ç£ç›˜
+// primaryAddræ˜¯ä¸»è¦å­˜å‚¨åŒº,åœ°å€å¿…é¡»ä¸ä¸ºPLATSA_INVALID_ADDR
+// standbyAddræ˜¯å¤‡ä»½å­˜å‚¨åŒº,ä¸ºPLATSA_INVALID_ADDRè¡¨ç¤ºæ— å¤‡ä»½å­˜å‚¨åŒº
+// sizeæ˜¯å­˜å‚¨åŒºå­—èŠ‚æ•°
+// æˆåŠŸè¿”å›true,å¤±è´¥è¿”å›false
 bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
     if (primaryAddr == PLATSA_INVALID_ADDR) {
         return false;
@@ -343,7 +343,7 @@ bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
             break;
         }
         item = (tItem*)node->Data;
-        // ÓĞ¹ıÆÚÊ±¼äµÄ½Úµã²»ÓÃ³Ö¾Ã»¯´æ´¢
+        // æœ‰è¿‡æœŸæ—¶é—´çš„èŠ‚ç‚¹ä¸ç”¨æŒä¹…åŒ–å­˜å‚¨
         if (item->expirationTime != 0) {
             continue;
         }
@@ -391,11 +391,11 @@ static bool writeFlash(uint32_t addr, int size, tSave* save) {
     return ret >= needWriteSize;
 }
 
-// PlatsaRecovery ´Ó´ÅÅÌ»Ö¸´Êı¾İ
-// primaryAddrÊÇÖ÷Òª´æ´¢Çø,µØÖ·±ØĞë²»ÎªPLATSA_INVALID_ADDR
-// standbyAddrÊÇ±¸·İ´æ´¢Çø,ÎªPLATSA_INVALID_ADDR±íÊ¾ÎŞ±¸·İ´æ´¢Çø
-// sizeÊÇ´æ´¢Çø×Ö½ÚÊı
-// ³É¹¦·µ»Øtrue,Ê§°Ü·µ»Øfalse
+// PlatsaRecovery ä»ç£ç›˜æ¢å¤æ•°æ®
+// primaryAddræ˜¯ä¸»è¦å­˜å‚¨åŒº,åœ°å€å¿…é¡»ä¸ä¸ºPLATSA_INVALID_ADDR
+// standbyAddræ˜¯å¤‡ä»½å­˜å‚¨åŒº,ä¸ºPLATSA_INVALID_ADDRè¡¨ç¤ºæ— å¤‡ä»½å­˜å‚¨åŒº
+// sizeæ˜¯å­˜å‚¨åŒºå­—èŠ‚æ•°
+// æˆåŠŸè¿”å›true,å¤±è´¥è¿”å›false
 bool PlatsaRecovery(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
     if (primaryAddr == PLATSA_INVALID_ADDR) {
         return false;
