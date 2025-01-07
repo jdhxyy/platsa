@@ -35,6 +35,8 @@ typedef struct {
 
 static int gMid = -1;
 static intptr_t gList = 0;
+// header对齐字节数
+static int gAlignNum = 1;
 
 static int task(void);
 static void clearExpirationNode(void);
@@ -419,7 +421,13 @@ static bool readFlash(uint32_t addr, int size) {
     uint8_t* buf = NULL;
     tSave header;
     bool ret = false;
-    if (TZFlashRead(handle, (uint8_t*)&header, sizeof(tSave)) != sizeof(tSave)) {
+
+    int len = (int)sizeof(tSave);
+    if (len % gAlignNum != 0) {
+        len = (len / gAlignNum + 1) * gAlignNum;
+    }
+
+    if (TZFlashRead(handle, (uint8_t*)&header, len) != len) {
         goto CLOSE_FLASH;
     }
     if (header.magic != MAGIC_WORD || (int)header.size > size) {
@@ -429,20 +437,27 @@ static bool readFlash(uint32_t addr, int size) {
         ret = true;
         goto CLOSE_FLASH;
     }
-    
-    buf = (uint8_t*)TZMalloc(gMid, (int)header.size);
+
+    len = (int)sizeof(tSave) + (int)header.size;
+
+    buf = (uint8_t*)TZMalloc(gMid, len);
     if (buf == NULL) {
         goto CLOSE_FLASH;
     }
-    if (TZFlashRead(handle, buf, (int)header.size) != (int)header.size) {
-        goto FREE_BUF;
-    }
-    crcCalc = Crc16Checksum(buf, (int)header.size);
-    if (crcCalc != header.crc16) {
+
+    // 重新再读一次全部的数据
+    TZFlashSeek(handle, 0);
+    if (TZFlashRead(handle, buf, len) != len) {
         goto FREE_BUF;
     }
 
-    ret = recovery(buf, (int)header.size);
+    tSave *item = (tSave*)buf;
+    crcCalc = Crc16Checksum(item->bytes, (int)item->size);
+    if (crcCalc != item->crc16) {
+        goto FREE_BUF;
+    }
+
+    ret = recovery(item->bytes, (int)item->size);
     goto FREE_BUF;
 
 FREE_BUF:
@@ -482,4 +497,9 @@ static bool recovery(uint8_t* bytes, int size) {
         }
     }
     return true;
+}
+
+// PlatsaSetAlign 设置对齐字节数
+void PlatsaSetAlign(int align) {
+    gAlignNum = align;
 }
