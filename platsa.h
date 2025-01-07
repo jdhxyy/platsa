@@ -101,4 +101,7 @@ bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size);
 // 成功返回true,失败返回false
 bool PlatsaRecovery(uint32_t primaryAddr, uint32_t standbyAddr, int size);
 
+// PlatsaSetAlign 设置对齐字节数
+void PlatsaSetAlign(int align);
+
 #endif
