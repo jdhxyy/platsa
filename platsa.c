@@ -347,6 +347,7 @@ bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
         item = (tItem*)node->Data;
         // 有过期时间的节点不用持久化存储
         if (item->expirationTime != 0) {
+            node = node->Next;
             continue;
         }
         memcpy(save->bytes + save->size, (uint8_t*)item, sizeof(tItem));
