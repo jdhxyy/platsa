@@ -10,7 +10,6 @@
 #include "tztime.h"
 #include "async.h"
 #include "tztype.h"
-#include "lagan.h"
 
 #include <string.h>
 
@@ -350,7 +349,6 @@ bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
         item = (tItem*)node->Data;
         // 有过期时间的节点不用持久化存储
         if (item->expirationTime != 0) {
-            // 必须先推进再continue:否则node原地不动,for(;;)会死循环(这是我方禁用TTL的原因之一)
             node = node->Next;
             continue;
         }
@@ -380,10 +378,8 @@ bool PlatsaSave(uint32_t primaryAddr, uint32_t standbyAddr, int size) {
     //   · 主区写中途掉电 → 备区已是新值N+1(有效) → 恢复得新值
     // 若反过来(先主后备),会出现"备区已坏→下次擦主区时掉电→两区皆坏→回落默认值"的窗口
     if (standbyAddr != PLATSA_INVALID_ADDR) {
-        if (writeFlash(standbyAddr, size, save) == false) {
-            // 备区失败不阻断主区:主区仍要更新,只是本次降级为"无备份"
-            LW(TAG, "warn!write standby failed.addr:0x%x size:%d", standbyAddr, size);
-        }
+        // 备区失败不阻断主区:主区仍要更新,只是本次降级为"无备份"
+        (void)writeFlash(standbyAddr, size, save);
     }
     if (writeFlash(primaryAddr, size, save) == false) {
         TZFree(save);
@@ -433,6 +429,7 @@ static bool readFlash(uint32_t addr, int size) {
     uint8_t* buf = NULL;
     tSave header;
     bool ret = false;
+    tSave *item = NULL;
 
     int len = (int)sizeof(tSave);
     if (len % gAlignNum != 0) {
@@ -463,7 +460,7 @@ static bool readFlash(uint32_t addr, int size) {
         goto FREE_BUF;
     }
 
-    tSave *item = (tSave*)buf;
+    item = (tSave*)buf;
     crcCalc = Crc16Checksum(item->bytes, (int)item->size);
     if (crcCalc != item->crc16) {
         goto FREE_BUF;
